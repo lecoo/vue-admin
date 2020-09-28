@@ -1,17 +1,50 @@
 import axios from 'axios';
 
-let base = '';
+let base = '/assetmgr_api';
 
-export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
+export const requestLogin = params => {
+	return axios.post(`${base}/Token`, params).then(res => res.data);
+};
 
-export const getUserList = params => { return axios.get(`${base}/user/list`, { params: params }); };
+export const getProductsPage = params => {
+	return axios.get(`${base}/Products`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
 
-export const getUserListPage = params => { return axios.get(`${base}/user/listpage`, { params: params }); };
+export const addProduct = params => {
+	return axios.post(`${base}/Product`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
 
-export const removeUser = params => { return axios.get(`${base}/user/remove`, { params: params }); };
+export const editProduct = params => {
+	return axios.put(`${base}/Product`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
 
-export const batchRemoveUser = params => { return axios.get(`${base}/user/batchremove`, { params: params }); };
+export const deleteProduct = params => {
+	return axios.delete(`${base}/Product`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
 
-export const editUser = params => { return axios.get(`${base}/user/edit`, { params: params }); };
-
-export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
+export const deleteProducts = params => {
+	return axios.delete(`${base}/Products`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
