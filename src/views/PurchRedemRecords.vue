@@ -4,13 +4,16 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.code" placeholder="产品编码"></el-input>
-				</el-form-item>
-				<el-form-item>
 					<el-input v-model="filters.prod_name" placeholder="产品名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getProducts">查询</el-button>
+					<el-date-picker type="date" placeholder="交易日" clearable v-model="filters.trade_date"></el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.remarks" placeholder="备注"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getPurchRedemRecords">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -19,23 +22,23 @@
 		</el-col>
 
 		<!-- 列表 -->
-		<el-table :data="products" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
+		<el-table :data="purch_redem_records" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
 		 @sort-change="onSortChanged" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="code" label="产品编码" width="120" sortable="custom">
+			<el-table-column prop="product.prod_name" label="产品名称" width="160" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="prod_name" label="产品名称" min-width="160" sortable="custom">
+			<el-table-column prop="trade_date" label="交易日" width="120" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="prod_short_name" label="产品简称" width="140" sortable="custom">
+			<el-table-column prop="direction" label="申/赎" width="120" :formatter="formatDirection" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="prod_type" label="类型" width="120" :formatter="formatProdType" sortable="custom">
+			<el-table-column prop="amount" label="金额" width="120" :formatter="formatAmount" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="setup_date" label="成立日期" width="120" sortable="custom">
+			<el-table-column prop="confirmed" label="金额已确认?" width="140" :formatter="formatConfirmed" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="windup_date" label="清盘日期" width="120" sortable="custom">
+			<el-table-column prop="remarks" label="备注" min-width="120">
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
@@ -56,27 +59,31 @@
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="编码" prop="code">
-					<el-input v-model="editForm.code" auto-complete="off"></el-input>
+				<el-form-item label="所属产品" prop="product_id">
+					<el-select v-model="editForm.product_id" clearable filterable placeholder="请选择产品">
+						<el-option v-for="product in products" :key="product.id" :value="product.id" :label="formatProduct(product)"></el-option>
+					</el-select>
 				</el-form-item>
-				<el-form-item label="名称">
-					<el-input v-model="editForm.prod_name" auto-complete="off"></el-input>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="简称">
-					<el-input v-model="editForm.prod_short_name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="类型">
-					<el-radio-group v-model="editForm.prod_type">
-						<el-radio class="radio" :label="1">1-自主发行</el-radio>
-						<el-radio class="radio" :label="2">2-投顾</el-radio>
-						<el-radio class="radio" :label="3">3-MOM</el-radio>
+				<el-form-item label="申/赎" prop="direction">
+					<el-radio-group v-model="editForm.direction">
+						<el-radio class="radio" :label="1">申购</el-radio>
+						<el-radio class="radio" :label="-1">赎回</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="成立日期">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.setup_date"></el-date-picker>
+				<el-form-item label="金额" prop="amount">
+					<el-input-number v-model="editForm.amount" :precision="2" :controls="false"></el-input-number>
 				</el-form-item>
-				<el-form-item label="清盘日期">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.windup_date"></el-date-picker>
+				<el-form-item label="金额是否已确认" prop="confirmed">
+					<el-radio-group v-model="editForm.confirmed">
+						<el-radio class="radio" :label="false">未确认</el-radio>
+						<el-radio class="radio" :label="true">已确认</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="editForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -88,27 +95,31 @@
 		<!--新增界面-->
 		<el-dialog title="新建产品" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="编码" prop="code">
-					<el-input v-model="addForm.code" auto-complete="off"></el-input>
+				<el-form-item label="所属产品" prop="product_id">
+					<el-select v-model="addForm.product_id" clearable filterable placeholder="请选择产品">
+						<el-option v-for="product in products" :key="product.id" :value="product.id" :label="formatProduct(product)"></el-option>
+					</el-select>
 				</el-form-item>
-				<el-form-item label="名称">
-					<el-input v-model="addForm.prod_name" auto-complete="off"></el-input>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="简称">
-					<el-input v-model="addForm.prod_short_name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="类型" prop="prod_type">
-					<el-radio-group v-model="addForm.prod_type">
-						<el-radio class="radio" :label="1">1-自主发行</el-radio>
-						<el-radio class="radio" :label="2">2-投顾</el-radio>
-						<el-radio class="radio" :label="3">3-MOM</el-radio>
+				<el-form-item label="申/赎" prop="direction">
+					<el-radio-group v-model="addForm.direction">
+						<el-radio class="radio" :label="1">申购</el-radio>
+						<el-radio class="radio" :label="-1">赎回</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="成立日期">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.setup_date"></el-date-picker>
+				<el-form-item label="金额" prop="amount">
+					<el-input-number v-model="addForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
 				</el-form-item>
-				<el-form-item label="清盘日期">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.windup_date"></el-date-picker>
+				<el-form-item label="金额是否已确认" prop="confirmed">
+					<el-radio-group v-model="addForm.confirmed">
+						<el-radio class="radio" :label="false">未确认</el-radio>
+						<el-radio class="radio" :label="true">已确认</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="addForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -123,11 +134,12 @@
 	import util from '../common/js/util';
 	//import NProgress from 'nprogress'
 	import {
+		getPurchRedemRecordsPage,
+		addPurchRedemRecord,
+		editPurchRedemRecord,
+		deletePurchRedemRecord,
+		deletePurchRedemRecords,
 		getProductsPage,
-		addProduct,
-		editProduct,
-		deleteProduct,
-		deleteProducts,
 	} from '../api/api';
 
 	export default {
@@ -137,7 +149,7 @@
 					name: '',
 					prod_name: '',
 				},
-				products: [],
+				purch_redem_records: [],
 				total: 0,
 				page: 1,
 				page_size: 15,
@@ -145,76 +157,101 @@
 				order: '',
 				listLoading: false,
 				sels: [], //列表选中列
+				products: [],
 
 				editFormVisible: false, //编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-					code: [{
+					product_id: [{
 						required: true,
-						message: '请输入编码',
-						trigger: 'blur'
+						message: '请选择产品',
 					}],
-					prod_type: [{
+					trade_date: [{
 						required: true,
-						message: '请选择产品类型',
+						message: '请选择交易日期',
+					}],
+					direction: [{
+						required: true,
+						message: '请选择申赎方向',
+					}],
+					amount: [{
+						required: true,
+						message: '请填写金额',
 					}],
 				},
 				//编辑界面数据
 				editForm: {
-					code: '',
-					prod_name: '',
-					prod_short_name: '',
+					
 				},
 
 				addFormVisible: false, //新增界面是否显示
 				addLoading: false,
 				addFormRules: {
-					code: [{
+					product_id: [{
 						required: true,
-						message: '请输入编码',
-						trigger: 'blur'
+						message: '请选择产品',
 					}],
-					prod_type: [{
+					trade_date: [{
 						required: true,
-						message: '请选择产品类型',
+						message: '请选择交易日期',
+					}],
+					direction: [{
+						required: true,
+						message: '请选择申赎方向',
+					}],
+					amount: [{
+						required: true,
+						message: '请填写金额',
 					}],
 				},
 				//新增界面数据
 				addForm: {
-					code: '',
-					prod_name: '',
-					prod_short_name: '',
+					confirmed: false,
+					remarks: '',
 				}
 
 			}
 		},
 		methods: {
-			formatProdType: function(row, column) {
-				if (row.prod_type == 1) return "1-自主发行";
-				if (row.prod_type == 2) return "2-投顾";
-				if (row.prod_type == 3) return "3-MOM";
-				if (row.prod_type != null) return row.prod_type.toString() + "-未知";
-				return "-未知";
+			formatDirection: function(row, column) {
+				if (row.direction == 1) return "申购";
+				if (row.direction == -1) return "赎回";
+				if (row.direction != null) return row.direction.toString();
+				return "";
+			},
+			formatAmount: function(row, column) {
+				return row.amount.toFixed(2);
+			},
+			formatConfirmed: function(row, column) {
+				if (row.confirmed) return "已确认";
+				else return "未确认";
+			},
+			formatProduct: function(product) {
+				if (product.enabled)
+					return product.prod_name;
+				else
+					return product.prod_name + "(已停用)";
 			},
 			handleCurrentChange: function(val) {
 				this.page = val;
-				this.getProducts();
+				this.getPurchRedemRecords();
 			},
-			getProducts: function() {
+			getPurchRedemRecords: function() {
 				let para = {
 					page: this.page,
 					page_size: this.page_size,
 					sort: this.sort,
 					order: this.order,
-					code_like: this.filters.code,
-					prod_name_like: this.filters.prod_name
+					"product.prod_name": this.filters.prod_name,
+					trade_date: this.filters.trade_date,
+					remarks: this.filters.remarks,
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getProductsPage(para)
+				getPurchRedemRecordsPage(para)
 					.then((res) => {
 						this.total = res.data.total;
-						this.products = res.data.data;
+						this.purch_redem_records = res.data.data;
 						this.listLoading = false;
 						// NProgress.done();
 					})
@@ -245,7 +282,7 @@
 					let para = {
 						id: row.id
 					};
-					deleteProduct(para)
+					deletePurchRedemRecord(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -253,7 +290,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getProducts();
+							this.getPurchRedemRecords();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -277,17 +314,64 @@
 			},
 			//显示编辑界面
 			handleEdit: function(index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
+				let para = {
+					page: 1,
+					page_size: 1000,
+					sort: "enabled,prod_name",
+					order: "desc,asc",
+				};
+				getProductsPage(para)
+					.then((res) => {
+						this.products = res.data.data;
+						this.editFormVisible = true;
+						this.editForm = Object.assign({}, row);
+					})
+					.catch(error => {
+						let rsp = error.response.data;
+						if ('err_code' in rsp && 'err_code_des' in rsp) {
+							this.$message({
+								message: rsp.err_code + ": " + rsp.err_code_des,
+								type: 'error'
+							});
+						} else {
+							this.$message({
+								message: error,
+								type: 'error'
+							});
+						}
+					});
 			},
 			//显示新增界面
 			handleAdd: function() {
-				this.addFormVisible = true;
-				this.addForm = {
-					code: '',
-					prod_name: '',
-					prod_short_name: '',
+				let para = {
+					page: 1,
+					page_size: 1000,
+					sort: "enabled,prod_name",
+					order: "desc,asc",
 				};
+				getProductsPage(para)
+					.then((res) => {
+						this.products = res.data.data;
+						this.addFormVisible = true;
+						this.addForm = {
+							confirmed: false,
+							remarks: '',
+						};
+					})
+					.catch(error => {
+						let rsp = error.response.data;
+						if ('err_code' in rsp && 'err_code_des' in rsp) {
+							this.$message({
+								message: rsp.err_code + ": " + rsp.err_code_des,
+								type: 'error'
+							});
+						} else {
+							this.$message({
+								message: error,
+								type: 'error'
+							});
+						}
+					});
 			},
 			//编辑
 			editSubmit: function() {
@@ -297,14 +381,7 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
-							para.setup_date = (!para.setup_date || para.setup_date == '') ? null : util.formatDate.format(new Date(para
-									.setup_date),
-								'yyyy-MM-dd');
-							para.windup_date = (!para.windup_date || para.windup_date == '') ? null : util.formatDate.format(new Date(
-									para.windup_date),
-								'yyyy-MM-dd');
-							para.enabled = (!para.windup_date || para.windup_date == '');
-							editProduct(para)
+							editPurchRedemRecord(para)
 								.then((response) => {
 									this.editLoading = false;
 									//NProgress.done();
@@ -323,7 +400,7 @@
 										});
 										this.$refs['editForm'].resetFields();
 										this.editFormVisible = false;
-										this.getProducts();
+										this.getPurchRedemRecords();
 									}
 								})
 								.catch(error => {
@@ -354,14 +431,7 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							para.setup_date = (!para.setup_date || para.setup_date == '') ? null : util.formatDate.format(new Date(para
-									.setup_date),
-								'yyyy-MM-dd');
-							para.windup_date = (!para.windup_date || para.windup_date == '') ? null : util.formatDate.format(new Date(
-									para.windup_date),
-								'yyyy-MM-dd');
-							para.enabled = (!para.windup_date || para.windup_date == '');
-							addProduct(para)
+							addPurchRedemRecord(para)
 								.then((response) => {
 									this.addLoading = false;
 									//NProgress.done();
@@ -380,7 +450,7 @@
 										});
 										this.$refs['addForm'].resetFields();
 										this.addFormVisible = false;
-										this.getProducts();
+										this.getPurchRedemRecords();
 									}
 								})
 								.catch(error => {
@@ -409,7 +479,7 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				this.getProducts();
+				this.getPurchRedemRecords();
 			},
 			//批量删除
 			batchRemove: function() {
@@ -422,7 +492,7 @@
 					let para = {
 						ids: ids
 					};
-					deleteProducts(para)
+					deletePurchRedemRecords(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -430,7 +500,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getProducts();
+							this.getPurchRedemRecords();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -454,7 +524,7 @@
 			}
 		},
 		mounted() {
-			this.getProducts();
+			this.getPurchRedemRecords();
 		}
 	}
 </script>

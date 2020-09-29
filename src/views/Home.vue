@@ -10,14 +10,7 @@
 				</div>
 			</el-col>
 			<el-col :span="4" class="userinfo">
-				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
-						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
-					</el-dropdown-menu>
-				</el-dropdown>
+				<el-button @click.native="logout">退出登录</el-button>
 			</el-col>
 		</el-col>
 		<el-col :span="24" class="main">
@@ -72,10 +65,13 @@
 </template>
 
 <script>
+	import {
+		requestLogout
+	} from '../api/api';
 	export default {
 		data() {
 			return {
-				sysName:'VUEADMIN',
+				sysName:'锋滔绩效跟踪管理',
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
@@ -109,13 +105,20 @@
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user');
-					_this.$router.push('/login');
+					requestLogout()
+						.then(rsp => {
+							sessionStorage.removeItem('token');
+							sessionStorage.removeItem('username');
+							_this.$router.push('/login');
+						})
+						.catch(error => {
+							sessionStorage.removeItem('token');
+							sessionStorage.removeItem('username');
+							_this.$router.push('/login');
+						});
 				}).catch(() => {
 
 				});
-
-
 			},
 			//折叠导航栏
 			collapse:function(){
