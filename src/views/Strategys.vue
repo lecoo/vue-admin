@@ -80,7 +80,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建策略" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="编码" prop="code">
 					<el-input v-model="addForm.code" auto-complete="off"></el-input>

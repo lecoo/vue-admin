@@ -25,6 +25,9 @@
 					</el-select>
 				</el-form-item>
 				<el-form-item>
+					<el-input v-model="filters.acco_com" placeholder="开户公司"></el-input>
+				</el-form-item>
+				<el-form-item>
 					<el-select v-model="filters.enabled" clearable placeholder="启用状态">
 						<el-option value="1" label="使用中"></el-option>
 						<el-option value="0" label="已停用"></el-option>
@@ -163,7 +166,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建账户" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="编码" prop="code">
 					<el-input v-model="addForm.code" auto-complete="off"></el-input>
@@ -353,6 +356,7 @@
 					"product.prod_name_like": this.filters.prod_name,
 					acco_like: this.filters.acco,
 					acco_type: this.filters.acco_type,
+					acco_com_like: this.filters.acco_com,
 					enabled: this.filters.enabled,
 				};
 				this.listLoading = true;

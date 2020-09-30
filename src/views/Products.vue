@@ -86,7 +86,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建产品" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="编码" prop="code">
 					<el-input v-model="addForm.code" auto-complete="off"></el-input>
@@ -196,6 +196,9 @@
 				if (row.prod_type != null) return row.prod_type.toString() + "-未知";
 				return "-未知";
 			},
+			formatDate: function(ctrlValue) {
+				return (!ctrlValue || ctrlValue == '') ? null : util.formatDate.format(new Date(ctrlValue), 'yyyy-MM-dd');
+			},
 			handleCurrentChange: function(val) {
 				this.page = val;
 				this.getProducts();
@@ -297,12 +300,8 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
-							para.setup_date = (!para.setup_date || para.setup_date == '') ? null : util.formatDate.format(new Date(para
-									.setup_date),
-								'yyyy-MM-dd');
-							para.windup_date = (!para.windup_date || para.windup_date == '') ? null : util.formatDate.format(new Date(
-									para.windup_date),
-								'yyyy-MM-dd');
+							para.setup_date = this.formatDate(para.setup_date);
+							para.windup_date = this.formatDate(para.windup_date);
 							para.enabled = (!para.windup_date || para.windup_date == '');
 							editProduct(para)
 								.then((response) => {
@@ -354,12 +353,8 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							para.setup_date = (!para.setup_date || para.setup_date == '') ? null : util.formatDate.format(new Date(para
-									.setup_date),
-								'yyyy-MM-dd');
-							para.windup_date = (!para.windup_date || para.windup_date == '') ? null : util.formatDate.format(new Date(
-									para.windup_date),
-								'yyyy-MM-dd');
+							para.setup_date = this.formatDate(para.setup_date);
+							para.windup_date = this.formatDate(para.windup_date);
 							para.enabled = (!para.windup_date || para.windup_date == '');
 							addProduct(para)
 								.then((response) => {

@@ -93,7 +93,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建产品" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="所属产品" prop="product_id">
 					<el-select v-model="addForm.product_id" clearable filterable placeholder="请选择产品">
@@ -226,6 +226,9 @@
 				if (row.confirmed) return "已确认";
 				else return "未确认";
 			},
+			formatDate: function(ctrlValue) {
+				return (!ctrlValue || ctrlValue == '') ? null : util.formatDate.format(new Date(ctrlValue), 'yyyy-MM-dd');
+			},
 			formatProduct: function(product) {
 				if (product.enabled)
 					return product.prod_name;
@@ -242,9 +245,9 @@
 					page_size: this.page_size,
 					sort: this.sort,
 					order: this.order,
-					"product.prod_name": this.filters.prod_name,
-					trade_date: this.filters.trade_date,
-					remarks: this.filters.remarks,
+					"product.prod_name_like": this.filters.prod_name,
+					trade_date: this.formatDate(this.filters.trade_date),
+					remarks_like: this.filters.remarks,
 				};
 				this.listLoading = true;
 				//NProgress.start();
@@ -381,6 +384,7 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
+							para.trade_date = this.formatDate(para.trade_date);
 							editPurchRedemRecord(para)
 								.then((response) => {
 									this.editLoading = false;
@@ -431,6 +435,7 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
+							para.trade_date = this.formatDate(para.trade_date);
 							addPurchRedemRecord(para)
 								.then((response) => {
 									this.addLoading = false;
