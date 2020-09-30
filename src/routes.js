@@ -6,6 +6,8 @@ import Products from './views/Products.vue'
 import Accounts from './views/Accounts.vue'
 import Strategys from './views/Strategys.vue'
 import PurchRedemRecords from './views/PurchRedemRecords.vue'
+import ProductFeeRecords from './views/ProductFeeRecords.vue'
+import StockFeeParams from './views/StockFeeParams.vue'
 
 import Form from './views/test/Form.vue'
 import Page4 from './views/test/Page4.vue'
@@ -70,8 +72,28 @@ let routes = [
 	        { path: '/purch_redem_records', component: PurchRedemRecords, name: '产品申赎记录' }
 	    ]
 	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/product_fee_records', component: ProductFeeRecords, name: '产品扣费记录' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '手续费参数',
+	    iconCls: 'fa fa-bookmark',
+	    children: [
+	        { path: '/stock_fee_params', component: StockFeeParams, name: '股票手续费' },
+	    ]
+	},
     {
         path: '/',
+		hidden: true,
         component: Home,
         name: '测试',
         iconCls: 'fa fa-bar-chart',

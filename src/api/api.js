@@ -148,7 +148,7 @@ export const deleteStrategys = params => {
 	});
 };
 
-// 产品申赎记录接口
+// 产品付费记录接口
 export const getPurchRedemRecordsPage = params => {
 	return axios.get(`${base}/PurchRedemRecords`, {
 		params: params,
@@ -185,6 +185,95 @@ export const deletePurchRedemRecord = params => {
 
 export const deletePurchRedemRecords = params => {
 	return axios.delete(`${base}/PurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 产品扣费记录接口
+export const getProductFeeRecordsPage = params => {
+	return axios.get(`${base}/ProductFeeRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addProductFeeRecord = params => {
+	return axios.post(`${base}/ProductFeeRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editProductFeeRecord = params => {
+	return axios.put(`${base}/ProductFeeRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteProductFeeRecord = params => {
+	return axios.delete(`${base}/ProductFeeRecord`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteProductFeeRecords = params => {
+	return axios.delete(`${base}/ProductFeeRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+
+// 股票手续费参数接口
+export const getStockFeeParamsPage = params => {
+	return axios.get(`${base}/StockFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addStockFeeParam = params => {
+	return axios.post(`${base}/StockFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editStockFeeParam = params => {
+	return axios.put(`${base}/StockFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteStockFeeParam = params => {
+	return axios.delete(`${base}/StockFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteStockFeeParams = params => {
+	return axios.delete(`${base}/StockFeeParams`, {
 		params: params,
 		headers: {
 			"token": sessionStorage.getItem('token')
