@@ -8,6 +8,9 @@ import Strategys from './views/Strategys.vue'
 import PurchRedemRecords from './views/PurchRedemRecords.vue'
 import ProductFeeRecords from './views/ProductFeeRecords.vue'
 import StockFeeParams from './views/StockFeeParams.vue'
+import EtfFeeParams from './views/EtfFeeParams.vue'
+import FuturesFeeParams from './views/FuturesFeeParams.vue'
+import CbondFeeParams from './views/CbondFeeParams.vue'
 
 import Form from './views/test/Form.vue'
 import Page4 from './views/test/Page4.vue'
@@ -89,6 +92,9 @@ let routes = [
 	    iconCls: 'fa fa-bookmark',
 	    children: [
 	        { path: '/stock_fee_params', component: StockFeeParams, name: '股票手续费' },
+			{ path: '/etf_fee_params', component: EtfFeeParams, name: 'ETF手续费' },
+			{ path: '/futures_fee_params', component: FuturesFeeParams, name: '期货手续费' },
+			{ path: '/cbond_fee_params', component: CbondFeeParams, name: '可转债手续费' },
 	    ]
 	},
     {

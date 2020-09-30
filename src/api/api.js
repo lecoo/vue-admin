@@ -280,3 +280,135 @@ export const deleteStockFeeParams = params => {
 		}
 	});
 };
+
+// ETF手续费参数接口
+export const getEtfFeeParamsPage = params => {
+	return axios.get(`${base}/EtfFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addEtfFeeParam = params => {
+	return axios.post(`${base}/EtfFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editEtfFeeParam = params => {
+	return axios.put(`${base}/EtfFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteEtfFeeParam = params => {
+	return axios.delete(`${base}/EtfFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteEtfFeeParams = params => {
+	return axios.delete(`${base}/EtfFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// ETF手续费参数接口
+export const getFuturesFeeParamsPage = params => {
+	return axios.get(`${base}/FuturesFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addFuturesFeeParam = params => {
+	return axios.post(`${base}/FuturesFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editFuturesFeeParam = params => {
+	return axios.put(`${base}/FuturesFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFuturesFeeParam = params => {
+	return axios.delete(`${base}/FuturesFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFuturesFeeParams = params => {
+	return axios.delete(`${base}/FuturesFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 可转债手续费参数接口
+export const getCbondFeeParamsPage = params => {
+	return axios.get(`${base}/CbondFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addCbondFeeParam = params => {
+	return axios.post(`${base}/CbondFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editCbondFeeParam = params => {
+	return axios.put(`${base}/CbondFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteCbondFeeParam = params => {
+	return axios.delete(`${base}/CbondFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteCbondFeeParams = params => {
+	return axios.delete(`${base}/CbondFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};

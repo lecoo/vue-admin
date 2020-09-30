@@ -10,7 +10,7 @@
 					<el-date-picker type="date" placeholder="更新日期" clearable v-model="filters.update_date"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getStockFeeParams">查询</el-button>
+					<el-button type="primary" v-on:click="getCbondFeeParams">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -19,7 +19,7 @@
 		</el-col>
 
 		<!-- 列表 -->
-		<el-table :data="stock_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
+		<el-table :data="cbond_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
 		 @sort-change="onSortChanged" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
@@ -137,11 +137,11 @@
 	import util from '../common/js/util';
 	//import NProgress from 'nprogress'
 	import {
-		getStockFeeParamsPage,
-		addStockFeeParam,
-		editStockFeeParam,
-		deleteStockFeeParam,
-		deleteStockFeeParams,
+		getCbondFeeParamsPage,
+		addCbondFeeParam,
+		editCbondFeeParam,
+		deleteCbondFeeParam,
+		deleteCbondFeeParams,
 		getAccountsPage,
 	} from '../api/api';
 
@@ -151,7 +151,7 @@
 				filters: {
 					
 				},
-				stock_fee_params: [],
+				cbond_fee_params: [],
 				total: 0,
 				page: 1,
 				page_size: 15,
@@ -260,9 +260,9 @@
 			},
 			handleCurrentChange: function(val) {
 				this.page = val;
-				this.getStockFeeParams();
+				this.getCbondFeeParams();
 			},
-			getStockFeeParams: function() {
+			getCbondFeeParams: function() {
 				let para = {
 					page: this.page,
 					page_size: this.page_size,
@@ -273,10 +273,10 @@
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getStockFeeParamsPage(para)
+				getCbondFeeParamsPage(para)
 					.then((res) => {
 						this.total = res.data.total;
-						this.stock_fee_params = res.data.data;
+						this.cbond_fee_params = res.data.data;
 						this.listLoading = false;
 						// NProgress.done();
 					})
@@ -307,7 +307,7 @@
 					let para = {
 						id: row.id
 					};
-					deleteStockFeeParam(para)
+					deleteCbondFeeParam(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -315,7 +315,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getCbondFeeParams();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -408,7 +408,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
 							para.update_date = this.formatDate(para.update_date);
-							editStockFeeParam(para)
+							editCbondFeeParam(para)
 								.then((response) => {
 									this.editLoading = false;
 									//NProgress.done();
@@ -427,7 +427,7 @@
 										});
 										this.$refs['editForm'].resetFields();
 										this.editFormVisible = false;
-										this.getStockFeeParams();
+										this.getCbondFeeParams();
 									}
 								})
 								.catch(error => {
@@ -459,7 +459,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
 							para.update_date = this.formatDate(para.update_date);
-							addStockFeeParam(para)
+							addCbondFeeParam(para)
 								.then((response) => {
 									this.addLoading = false;
 									//NProgress.done();
@@ -478,7 +478,7 @@
 										});
 										this.$refs['addForm'].resetFields();
 										this.addFormVisible = false;
-										this.getStockFeeParams();
+										this.getCbondFeeParams();
 									}
 								})
 								.catch(error => {
@@ -507,7 +507,7 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				this.getStockFeeParams();
+				this.getCbondFeeParams();
 			},
 			//批量删除
 			batchRemove: function() {
@@ -520,7 +520,7 @@
 					let para = {
 						ids: ids
 					};
-					deleteStockFeeParams(para)
+					deleteCbondFeeParams(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -528,7 +528,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getCbondFeeParams();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -552,7 +552,7 @@
 			}
 		},
 		mounted() {
-			this.getStockFeeParams();
+			this.getCbondFeeParams();
 		}
 	}
 </script>

@@ -87,7 +87,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建产品" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="所属产品" prop="product_id">
 					<el-select v-model="addForm.product_id" clearable filterable placeholder="请选择产品">
@@ -196,7 +196,7 @@
 				},
 				//新增界面数据
 				addForm: {
-					remarks: '',
+					
 				}
 
 			}
@@ -343,7 +343,7 @@
 						this.products = res.data.data;
 						this.addFormVisible = true;
 						this.addForm = {
-							remarks: '',
+							
 						};
 					})
 					.catch(error => {
