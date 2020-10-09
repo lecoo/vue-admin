@@ -412,3 +412,47 @@ export const deleteCbondFeeParams = params => {
 		}
 	});
 };
+
+// 可转债手续费参数接口
+export const getRrtFeeParamsPage = params => {
+	return axios.get(`${base}/RrtFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addRrtFeeParam = params => {
+	return axios.post(`${base}/RrtFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editRrtFeeParam = params => {
+	return axios.put(`${base}/RrtFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteRrtFeeParam = params => {
+	return axios.delete(`${base}/RrtFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteRrtFeeParams = params => {
+	return axios.delete(`${base}/RrtFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};

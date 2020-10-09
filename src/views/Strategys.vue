@@ -191,7 +191,7 @@
 						this.listLoading = false;
 						//NProgress.done();
 						let rsp = error.response.data;
-						if ('err_code' in rsp && 'err_code_des' in rsp) {
+						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 							this.$message({
 								message: rsp.err_code + ": " + rsp.err_code_des,
 								type: 'error'
@@ -228,7 +228,7 @@
 							this.listLoading = false;
 							//NProgress.done();
 							let rsp = error.response.data;
-							if ('err_code' in rsp && 'err_code_des' in rsp) {
+							if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 								this.$message({
 									message: rsp.err_code + ": " + rsp.err_code_des,
 									type: 'error'
@@ -290,7 +290,7 @@
 									this.editLoading = false;
 									//NProgress.done();
 									let rsp = error.response.data;
-									if ('err_code' in rsp && 'err_code_des' in rsp) {
+									if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 										this.$message({
 											message: rsp.err_code + ": " + rsp.err_code_des,
 											type: 'error'
@@ -340,7 +340,7 @@
 									this.addLoading = false;
 									//NProgress.done();
 									let rsp = error.response.data;
-									if ('err_code' in rsp && 'err_code_des' in rsp) {
+									if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 										this.$message({
 											message: rsp.err_code + ": " + rsp.err_code_des,
 											type: 'error'
@@ -389,7 +389,7 @@
 							this.listLoading = false;
 							//NProgress.done();
 							let rsp = error.response.data;
-							if ('err_code' in rsp && 'err_code_des' in rsp) {
+							if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 								this.$message({
 									message: rsp.err_code + ": " + rsp.err_code_des,
 									type: 'error'

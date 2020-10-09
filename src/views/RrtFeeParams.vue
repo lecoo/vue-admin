@@ -10,7 +10,7 @@
 					<el-date-picker type="date" placeholder="更新日期" clearable v-model="filters.update_date"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getEtfFeeParams">查询</el-button>
+					<el-button type="primary" v-on:click="getRrtFeeParams">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -19,7 +19,7 @@
 		</el-col>
 
 		<!-- 列表 -->
-		<el-table :data="etf_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
+		<el-table :data="rrt_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
 		 @sort-change="onSortChanged" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
@@ -31,17 +31,9 @@
 			</el-table-column>
 			<el-table-column prop="update_date" label="更新日期" width="120" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_com" label="上交佣金" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="sh_discount" label="上交所折扣率" width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_other" label="上交其他" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sh_min" label="上交最低" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_com" label="深交佣金" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_other" label="深交其他" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_min" label="深交最低" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="sz_discount" label="深交所折扣率" width="140" sortable="custom">
 			</el-table-column>
 			<el-table-column label="操作" min-width="150">
 				<template scope="scope">
@@ -70,23 +62,11 @@
 				<el-form-item label="更新日期" prop="update_date">
 					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="editForm.sh_com" auto-complete="off"></el-input>
+				<el-form-item label="上交所折扣率" prop="sh_discount">
+					<el-input v-model="editForm.sh_discount" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="editForm.sh_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="editForm.sh_min" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="editForm.sz_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="editForm.sz_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="editForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="深交所折扣率" prop="sz_discount">
+					<el-input v-model="editForm.sz_discount" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -106,23 +86,11 @@
 				<el-form-item label="更新日期" prop="update_date">
 					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="addForm.sh_com" auto-complete="off"></el-input>
+				<el-form-item label="上交所折扣率" prop="sh_discount">
+					<el-input v-model="addForm.sh_discount" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="addForm.sh_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="addForm.sh_min" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="addForm.sz_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="addForm.sz_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="addForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="深交所折扣率" prop="sz_discount">
+					<el-input v-model="addForm.sz_discount" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -137,11 +105,11 @@
 	import util from '../common/js/util';
 	//import NProgress from 'nprogress'
 	import {
-		getEtfFeeParamsPage,
-		addEtfFeeParam,
-		editEtfFeeParam,
-		deleteEtfFeeParam,
-		deleteEtfFeeParams,
+		getRrtFeeParamsPage,
+		addRrtFeeParam,
+		editRrtFeeParam,
+		deleteRrtFeeParam,
+		deleteRrtFeeParams,
 		getAccountsPage,
 	} from '../api/api';
 
@@ -151,7 +119,7 @@
 				filters: {
 					
 				},
-				etf_fee_params: [],
+				rrt_fee_params: [],
 				total: 0,
 				page: 1,
 				page_size: 15,
@@ -172,29 +140,13 @@
 						required: true,
 						message: '请选择更新日期',
 					}],
-					sh_com: [{
+					sh_discount: [{
 						required: true,
-						message: '请设置上交所佣金费率',
+						message: '请设置上交所折扣率',
 					}],
-					sh_other: [{
+					sz_discount: [{
 						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
+						message: '请设置深交所折扣率',
 					}],
 				},
 				//编辑界面数据
@@ -213,29 +165,13 @@
 						required: true,
 						message: '请选择更新日期',
 					}],
-					sh_com: [{
+					sh_discount: [{
 						required: true,
-						message: '请设置上交所佣金费率',
+						message: '请设置上交所折扣率',
 					}],
-					sh_other: [{
+					sz_discount: [{
 						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
+						message: '请设置深交所折扣率',
 					}],
 				},
 				//新增界面数据
@@ -260,9 +196,9 @@
 			},
 			handleCurrentChange: function(val) {
 				this.page = val;
-				this.getEtfFeeParams();
+				this.getRrtFeeParams();
 			},
-			getEtfFeeParams: function() {
+			getRrtFeeParams: function() {
 				let para = {
 					page: this.page,
 					page_size: this.page_size,
@@ -273,10 +209,10 @@
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getEtfFeeParamsPage(para)
+				getRrtFeeParamsPage(para)
 					.then((res) => {
 						this.total = res.data.total;
-						this.etf_fee_params = res.data.data;
+						this.rrt_fee_params = res.data.data;
 						this.listLoading = false;
 						// NProgress.done();
 					})
@@ -284,7 +220,7 @@
 						this.listLoading = false;
 						//NProgress.done();
 						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						if ('err_code' in rsp && 'err_code_des' in rsp) {
 							this.$message({
 								message: rsp.err_code + ": " + rsp.err_code_des,
 								type: 'error'
@@ -307,7 +243,7 @@
 					let para = {
 						id: row.id
 					};
-					deleteEtfFeeParam(para)
+					deleteRrtFeeParam(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -315,13 +251,13 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getEtfFeeParams();
+							this.getRrtFeeParams();
 						})
 						.catch(error => {
 							this.listLoading = false;
 							//NProgress.done();
 							let rsp = error.response.data;
-							if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+							if ('err_code' in rsp && 'err_code_des' in rsp) {
 								this.$message({
 									message: rsp.err_code + ": " + rsp.err_code_des,
 									type: 'error'
@@ -342,7 +278,7 @@
 				let para = {
 					page: 1,
 					page_size: 1000,
-					acco_type_in: "stock,credit",
+					acco_type: "stock",
 					sort: "enabled,acco_com",
 					order: "desc,asc",
 				};
@@ -354,7 +290,7 @@
 					})
 					.catch(error => {
 						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						if ('err_code' in rsp && 'err_code_des' in rsp) {
 							this.$message({
 								message: rsp.err_code + ": " + rsp.err_code_des,
 								type: 'error'
@@ -372,7 +308,7 @@
 				let para = {
 					page: 1,
 					page_size: 1000,
-					acco_type_in: "stock,credit",
+					acco_type: "stock",
 					sort: "enabled,acco_com",
 					order: "desc,asc",
 				};
@@ -386,7 +322,7 @@
 					})
 					.catch(error => {
 						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						if ('err_code' in rsp && 'err_code_des' in rsp) {
 							this.$message({
 								message: rsp.err_code + ": " + rsp.err_code_des,
 								type: 'error'
@@ -408,7 +344,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
 							para.update_date = this.formatDate(para.update_date);
-							editEtfFeeParam(para)
+							editRrtFeeParam(para)
 								.then((response) => {
 									this.editLoading = false;
 									//NProgress.done();
@@ -427,14 +363,14 @@
 										});
 										this.$refs['editForm'].resetFields();
 										this.editFormVisible = false;
-										this.getEtfFeeParams();
+										this.getRrtFeeParams();
 									}
 								})
 								.catch(error => {
 									this.editLoading = false;
 									//NProgress.done();
 									let rsp = error.response.data;
-									if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+									if ('err_code' in rsp && 'err_code_des' in rsp) {
 										this.$message({
 											message: rsp.err_code + ": " + rsp.err_code_des,
 											type: 'error'
@@ -459,7 +395,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
 							para.update_date = this.formatDate(para.update_date);
-							addEtfFeeParam(para)
+							addRrtFeeParam(para)
 								.then((response) => {
 									this.addLoading = false;
 									//NProgress.done();
@@ -478,14 +414,14 @@
 										});
 										this.$refs['addForm'].resetFields();
 										this.addFormVisible = false;
-										this.getEtfFeeParams();
+										this.getRrtFeeParams();
 									}
 								})
 								.catch(error => {
 									this.addLoading = false;
 									//NProgress.done();
 									let rsp = error.response.data;
-									if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+									if ('err_code' in rsp && 'err_code_des' in rsp) {
 										this.$message({
 											message: rsp.err_code + ": " + rsp.err_code_des,
 											type: 'error'
@@ -507,7 +443,7 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				this.getEtfFeeParams();
+				this.getRrtFeeParams();
 			},
 			//批量删除
 			batchRemove: function() {
@@ -520,7 +456,7 @@
 					let para = {
 						ids: ids
 					};
-					deleteEtfFeeParams(para)
+					deleteRrtFeeParams(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -528,13 +464,13 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getEtfFeeParams();
+							this.getRrtFeeParams();
 						})
 						.catch(error => {
 							this.listLoading = false;
 							//NProgress.done();
 							let rsp = error.response.data;
-							if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+							if ('err_code' in rsp && 'err_code_des' in rsp) {
 								this.$message({
 									message: rsp.err_code + ": " + rsp.err_code_des,
 									type: 'error'
@@ -552,7 +488,7 @@
 			}
 		},
 		mounted() {
-			this.getEtfFeeParams();
+			this.getRrtFeeParams();
 		}
 	}
 </script>

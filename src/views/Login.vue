@@ -83,8 +83,9 @@
 							.catch(error => {
 								this.logining = false;
 								//NProgress.done();
+								//console.log(error.response.data);
 								let rsp = error.response.data;
-								if ('err_code' in rsp && 'err_code_des' in rsp) {
+								if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
 									this.$message({
 										message: rsp.err_code + ": " + rsp.err_code_des,
 										type: 'error'
@@ -97,7 +98,6 @@
 								}
 							});
 					} else {
-						console.log('error submit!!');
 						return false;
 					}
 				});
