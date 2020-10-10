@@ -16,6 +16,8 @@ import FundPurchRedemRecords from './views/FundPurchRedemRecords.vue'
 import FundNavEstis from './views/FundNavEstis.vue'
 import MoneyfundPurchRedemRecords from './views/MoneyfundPurchRedemRecords.vue'
 import EmbeddingPurchRedemRecords from './views/EmbeddingPurchRedemRecords.vue'
+import OtherPurchRedemRecords from './views/OtherPurchRedemRecords.vue'
+import OtherValues from './views/OtherValues.vue'
 
 import Form from './views/test/Form.vue'
 import Page4 from './views/test/Page4.vue'
@@ -141,6 +143,26 @@ let routes = [
 	    leaf: true,//只有一个节点
 	    children: [
 	        { path: '/embedding_purch_redem_records', component: EmbeddingPurchRedemRecords, name: '嵌套产品申赎记录' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/other_purch_redem_records', component: OtherPurchRedemRecords, name: '其他场外资产交易记录' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/other_values', component: OtherValues, name: '其他场外资产市值更新' }
 	    ]
 	},
 	

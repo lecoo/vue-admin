@@ -632,3 +632,91 @@ export const deleteEmbeddingPurchRedemRecords = params => {
 		}
 	});
 };
+
+// 其他场外资产交易接口
+export const getOtherPurchRedemRecordsPage = params => {
+	return axios.get(`${base}/OtherPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addOtherPurchRedemRecord = params => {
+	return axios.post(`${base}/OtherPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editOtherPurchRedemRecord = params => {
+	return axios.put(`${base}/OtherPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOtherPurchRedemRecord = params => {
+	return axios.delete(`${base}/OtherPurchRedemRecord`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOtherPurchRedemRecords = params => {
+	return axios.delete(`${base}/OtherPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 其他场外资产市值接口
+export const getOtherValuesPage = params => {
+	return axios.get(`${base}/OtherValues`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addOtherValue = params => {
+	return axios.post(`${base}/OtherValue`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editOtherValue = params => {
+	return axios.put(`${base}/OtherValue`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOtherValue = params => {
+	return axios.delete(`${base}/OtherValue`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOtherValues = params => {
+	return axios.delete(`${base}/OtherValues`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
