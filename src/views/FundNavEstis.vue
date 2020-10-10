@@ -4,13 +4,13 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.acco_com" placeholder="开户公司"></el-input>
+					<el-input v-model="filters.sec_code" placeholder="基金代码"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-date-picker type="date" placeholder="更新日期" clearable v-model="filters.update_date"></el-date-picker>
+					<el-date-picker type="date" placeholder="交易日" clearable v-model="filters.trade_date"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getStockFeeParams">查询</el-button>
+					<el-button type="primary" v-on:click="getFundNavEstis">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -19,31 +19,19 @@
 		</el-col>
 
 		<!-- 列表 -->
-		<el-table :data="stock_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
+		<el-table :data="fund_nav_estis" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
 		 @sort-change="onSortChanged" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="account.acco_com" label="开户公司" width="120" sortable="custom">
+			<el-table-column prop="sec_code" label="基金代码" width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="account.acco" label="用户代码" width="140" sortable="custom">
+			<el-table-column prop="trade_date" label="交易日" min-width="120" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="update_date" label="更新日期" width="120" sortable="custom">
+			<el-table-column prop="esti_nav" label="预估净值" width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_com" label="上交佣金" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sh_other" label="上交其他" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sh_min" label="上交最低" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_com" label="深交佣金" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_other" label="深交其他" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_min" label="深交最低" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column label="操作" min-width="150">
+			<el-table-column label="操作" width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -62,31 +50,14 @@
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="账户" prop="account_id">
-					<el-select v-model="editForm.account_id" clearable filterable placeholder="请选择账户">
-						<el-option v-for="account in accounts" :key="account.id" :value="account.id" :label="formatAccount(account)"></el-option>
-					</el-select>
+				<el-form-item label="基金代码" prop="sec_code">
+					<el-input v-model="editForm.sec_code" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="更新日期" prop="update_date">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="交易日" clearable v-model="editForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="editForm.sh_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="editForm.sh_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="editForm.sh_min" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="editForm.sz_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="editForm.sz_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="editForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="预估净值" prop="esti_nav">
+					<el-input-number v-model="editForm.esti_nav" :precision="4" :step="0.0001" :controls-position="right"></el-input-number>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -98,31 +69,14 @@
 		<!--新增界面-->
 		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="账户" prop="account_id">
-					<el-select v-model="addForm.account_id" clearable filterable placeholder="请选择账户">
-						<el-option v-for="account in accounts" :key="account.id" :value="account.id" :label="formatAccount(account)"></el-option>
-					</el-select>
+				<el-form-item label="基金代码" prop="sec_code">
+					<el-input v-model="addForm.sec_code" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="更新日期" prop="update_date">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="交易日" clearable v-model="addForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="addForm.sh_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="addForm.sh_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="addForm.sh_min" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="addForm.sz_com" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="addForm.sz_other" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="addForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="预估净值" prop="esti_nav">
+					<el-input-number v-model="addForm.esti_nav" :precision="4" :step="0.0001" :controls-position="right"></el-input-number>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -137,21 +91,21 @@
 	import util from '../common/js/util';
 	//import NProgress from 'nprogress'
 	import {
-		getStockFeeParamsPage,
-		addStockFeeParam,
-		editStockFeeParam,
-		deleteStockFeeParam,
-		deleteStockFeeParams,
-		getAccountsPage,
+		getFundNavEstisPage,
+		addFundNavEsti,
+		editFundNavEsti,
+		deleteFundNavEsti,
+		deleteFundNavEstis,
 	} from '../api/api';
 
 	export default {
 		data() {
 			return {
 				filters: {
-					
+					name: '',
+					prod_name: '',
 				},
-				stock_fee_params: [],
+				fund_nav_estis: [],
 				total: 0,
 				page: 1,
 				page_size: 15,
@@ -159,42 +113,22 @@
 				order: '',
 				listLoading: false,
 				sels: [], //列表选中列
-				accounts: [],
 
 				editFormVisible: false, //编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-					account_id: [{
+					sec_code: [{
 						required: true,
-						message: '请选择账户',
+						message: '请输入基金代码',
+						trigger: 'blur'
 					}],
-					update_date: [{
+					trade_date: [{
 						required: true,
-						message: '请选择更新日期',
+						message: '请选择交易日',
 					}],
-					sh_com: [{
+					esti_nav: [{
 						required: true,
-						message: '请设置上交所佣金费率',
-					}],
-					sh_other: [{
-						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
+						message: '请填写预估净值',
 					}],
 				},
 				//编辑界面数据
@@ -205,78 +139,51 @@
 				addFormVisible: false, //新增界面是否显示
 				addLoading: false,
 				addFormRules: {
-					account_id: [{
+					sec_code: [{
 						required: true,
-						message: '请选择账户',
+						message: '请输入基金代码',
+						trigger: 'blur'
 					}],
-					update_date: [{
+					trade_date: [{
 						required: true,
-						message: '请选择更新日期',
+						message: '请选择交易日',
 					}],
-					sh_com: [{
+					esti_nav: [{
 						required: true,
-						message: '请设置上交所佣金费率',
-					}],
-					sh_other: [{
-						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
+						message: '请填写预估净值',
 					}],
 				},
 				//新增界面数据
 				addForm: {
-					
+					sec_code: '',
+					trade_date: new Date().format("YYYY-MM-dd"),
 				}
 
 			}
 		},
 		methods: {
-			formatRate: function(row, column) {
-				return row[column.property].toFixed(5);
-			},
 			formatDate: function(ctrlValue) {
 				return (!ctrlValue || ctrlValue == '') ? null : util.formatDate.format(new Date(ctrlValue), 'yyyy-MM-dd');
 			},
-			formatAccount: function(account) {
-				if (account.enabled)
-					return account.product.prod_name + " " + account.acco_com + " " + account.acco;
-				else
-					return account.product.prod_name + " " + account.acco_com + " " + account.acco + "(已停用)";
-			},
 			handleCurrentChange: function(val) {
 				this.page = val;
-				this.getStockFeeParams();
+				this.getFundNavEstis();
 			},
-			getStockFeeParams: function() {
+			getFundNavEstis: function() {
 				let para = {
 					page: this.page,
 					page_size: this.page_size,
 					sort: this.sort,
 					order: this.order,
-					"account.acco_com_like": this.filters.acco_com,
-					update_date: this.formatDate(this.filters.update_date),
+					sec_code_like: this.filters.sec_code,
+					trade_date: this.filters.trade_date,
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getStockFeeParamsPage(para)
+				getFundNavEstisPage(para)
 					.then((res) => {
 						this.total = res.data.total;
-						this.stock_fee_params = res.data.data;
+						this.fund_nav_estis = res.data.data;
 						this.listLoading = false;
 						// NProgress.done();
 					})
@@ -307,7 +214,7 @@
 					let para = {
 						id: row.id
 					};
-					deleteStockFeeParam(para)
+					deleteFundNavEsti(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -315,7 +222,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getFundNavEstis();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -339,65 +246,16 @@
 			},
 			//显示编辑界面
 			handleEdit: function(index, row) {
-				let para = {
-					page: 1,
-					page_size: 1000,
-					acco_type_in: "stock,credit",
-					sort: "enabled,acco_com",
-					order: "desc,asc",
-				};
-				getAccountsPage(para)
-					.then((res) => {
-						this.accounts = res.data.data;
-						this.editFormVisible = true;
-						this.editForm = Object.assign({}, row);
-					})
-					.catch(error => {
-						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
-							this.$message({
-								message: rsp.err_code + ": " + rsp.err_code_des,
-								type: 'error'
-							});
-						} else {
-							this.$message({
-								message: error,
-								type: 'error'
-							});
-						}
-					});
+				this.editFormVisible = true;
+				this.editForm = Object.assign({}, row);
 			},
 			//显示新增界面
 			handleAdd: function() {
-				let para = {
-					page: 1,
-					page_size: 1000,
-					acco_type_in: "stock,credit",
-					sort: "enabled,acco_com",
-					order: "desc,asc",
+				this.addFormVisible = true;
+				this.addForm = {
+					sec_code: '',
+					trade_date: new Date().format("YYYY-MM-dd"),
 				};
-				getAccountsPage(para)
-					.then((res) => {
-						this.accounts = res.data.data;
-						this.addFormVisible = true;
-						this.addForm = {
-							
-						};
-					})
-					.catch(error => {
-						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
-							this.$message({
-								message: rsp.err_code + ": " + rsp.err_code_des,
-								type: 'error'
-							});
-						} else {
-							this.$message({
-								message: error,
-								type: 'error'
-							});
-						}
-					});
 			},
 			//编辑
 			editSubmit: function() {
@@ -407,8 +265,8 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
-							para.update_date = this.formatDate(para.update_date);
-							editStockFeeParam(para)
+							para.trade_date = this.formatDate(para.trade_date);
+							editFundNavEsti(para)
 								.then((response) => {
 									this.editLoading = false;
 									//NProgress.done();
@@ -427,7 +285,7 @@
 										});
 										this.$refs['editForm'].resetFields();
 										this.editFormVisible = false;
-										this.getStockFeeParams();
+										this.getFundNavEstis();
 									}
 								})
 								.catch(error => {
@@ -458,8 +316,8 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							para.update_date = this.formatDate(para.update_date);
-							addStockFeeParam(para)
+							para.trade_date = this.formatDate(para.trade_date);
+							addFundNavEsti(para)
 								.then((response) => {
 									this.addLoading = false;
 									//NProgress.done();
@@ -478,7 +336,7 @@
 										});
 										this.$refs['addForm'].resetFields();
 										this.addFormVisible = false;
-										this.getStockFeeParams();
+										this.getFundNavEstis();
 									}
 								})
 								.catch(error => {
@@ -507,7 +365,7 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				this.getStockFeeParams();
+				this.getFundNavEstis();
 			},
 			//批量删除
 			batchRemove: function() {
@@ -520,7 +378,7 @@
 					let para = {
 						ids: ids
 					};
-					deleteStockFeeParams(para)
+					deleteFundNavEstis(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -528,7 +386,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getFundNavEstis();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -552,7 +410,7 @@
 			}
 		},
 		mounted() {
-			this.getStockFeeParams();
+			this.getFundNavEstis();
 		}
 	}
 </script>

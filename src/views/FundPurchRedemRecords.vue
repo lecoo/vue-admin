@@ -7,10 +7,16 @@
 					<el-input v-model="filters.acco_com" placeholder="开户公司"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-date-picker type="date" placeholder="更新日期" clearable v-model="filters.update_date"></el-date-picker>
+					<el-input v-model="filters.stra_name" placeholder="策略名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getStockFeeParams">查询</el-button>
+					<el-date-picker type="date" placeholder="交易日" clearable v-model="filters.trade_date"></el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-input v-model="filters.remarks" placeholder="备注"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getFundPurchRedemRecords">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -19,31 +25,29 @@
 		</el-col>
 
 		<!-- 列表 -->
-		<el-table :data="stock_fee_params" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
+		<el-table :data="fund_purch_redem_records" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
 		 @sort-change="onSortChanged" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
 			</el-table-column>
+			<el-table-column prop="account.product.prod_name" label="产品名称" width="160" sortable="custom">
+			</el-table-column>
 			<el-table-column prop="account.acco_com" label="开户公司" width="120" sortable="custom">
 			</el-table-column>
 			<el-table-column prop="account.acco" label="用户代码" width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="update_date" label="更新日期" width="120" sortable="custom">
+			<el-table-column prop="trade_date" label="交易日" width="120" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_com" label="上交佣金" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="direction" label="申/赎" width="120" :formatter="formatDirection" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_other" label="上交其他" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="amount" label="金额" width="120" :formatter="formatAmount" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sh_min" label="上交最低" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="confirmed" label="是否已确认" width="140" :formatter="formatConfirmed" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="sz_com" label="深交佣金" width="120" :formatter="formatRate" sortable="custom">
+			<el-table-column prop="remarks" label="备注" min-width="120">
 			</el-table-column>
-			<el-table-column prop="sz_other" label="深交其他" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column prop="sz_min" label="深交最低" width="120" :formatter="formatRate" sortable="custom">
-			</el-table-column>
-			<el-table-column label="操作" min-width="150">
+			<el-table-column label="操作" width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -67,26 +71,43 @@
 						<el-option v-for="account in accounts" :key="account.id" :value="account.id" :label="formatAccount(account)"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="更新日期" prop="update_date">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-form-item label="策略" prop="strategy_id">
+					<el-select v-model="editForm.strategy_id" clearable filterable placeholder="请选择策略">
+						<el-option v-for="strategy in strategies" :key="strategy.id" :value="strategy.id" :label="formatStrategy(strategy)"></el-option>
+					</el-select>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="editForm.sh_com" auto-complete="off"></el-input>
+				<el-form-item label="组合编号">
+					<el-input key="port_no" v-model="editForm.port_no" auto-complete="on"></el-input>
 				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="editForm.sh_other" auto-complete="off"></el-input>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="editForm.sh_min" auto-complete="off"></el-input>
+				<el-form-item label="基金代码" prop="sec_code">
+					<el-input key="sec_code" v-model="editForm.sec_code" auto-complete="on"></el-input>
 				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="editForm.sz_com" auto-complete="off"></el-input>
+				<el-form-item label="申/赎" prop="direction">
+					<el-radio-group v-model="editForm.direction">
+						<el-radio class="radio" :label="1">申购</el-radio>
+						<el-radio class="radio" :label="-1">赎回</el-radio>
+					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="editForm.sz_other" auto-complete="off"></el-input>
+				<el-form-item label="成交份额" prop="unit">
+					<el-input-number v-model="editForm.unit" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
 				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="editForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="交易金额" prop="amount">
+					<el-input-number v-model="editForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				</el-form-item>
+				<el-form-item label="手续费" prop="fee">
+					<el-input-number v-model="editForm.fee" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				</el-form-item>
+				<el-form-item :label="formatConfirmedLabel(editForm.direction)" prop="confirmed">
+					<el-radio-group v-model="editForm.confirmed">
+						<el-radio class="radio" :label="false">未确认</el-radio>
+						<el-radio class="radio" :label="true">已确认</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="editForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -103,26 +124,43 @@
 						<el-option v-for="account in accounts" :key="account.id" :value="account.id" :label="formatAccount(account)"></el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="更新日期" prop="update_date">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.update_date" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-form-item label="策略" prop="strategy_id">
+					<el-select v-model="addForm.strategy_id" clearable filterable placeholder="请选择策略">
+						<el-option v-for="strategy in strategies" :key="strategy.id" :value="strategy.id" :label="formatStrategy(strategy)"></el-option>
+					</el-select>
 				</el-form-item>
-				<el-form-item label="上交所佣金费率" prop="sh_com">
-					<el-input v-model="addForm.sh_com" auto-complete="off"></el-input>
+				<el-form-item label="组合编号">
+					<el-input key="port_no" v-model="addForm.port_no" auto-complete="on"></el-input>
 				</el-form-item>
-				<el-form-item label="上交所其他费率" prop="sh_other">
-					<el-input v-model="addForm.sh_other" auto-complete="off"></el-input>
+				<el-form-item label="交易日" prop="trade_date">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.trade_date"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="上交所最低消费" prop="sh_min">
-					<el-input v-model="addForm.sh_min" auto-complete="off"></el-input>
+				<el-form-item label="基金代码" prop="sec_code">
+					<el-input key="sec_code" v-model="addForm.sec_code" auto-complete="on"></el-input>
 				</el-form-item>
-				<el-form-item label="深交所佣金费率" prop="sz_com">
-					<el-input v-model="addForm.sz_com" auto-complete="off"></el-input>
+				<el-form-item label="申/赎" prop="direction">
+					<el-radio-group v-model="addForm.direction">
+						<el-radio class="radio" :label="1">申购</el-radio>
+						<el-radio class="radio" :label="-1">赎回</el-radio>
+					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="深交所其他费率" prop="sz_other">
-					<el-input v-model="addForm.sz_other" auto-complete="off"></el-input>
+				<el-form-item label="成交份额" prop="unit">
+					<el-input-number v-model="addForm.unit" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
 				</el-form-item>
-				<el-form-item label="深交所最低消费" prop="sz_min">
-					<el-input v-model="addForm.sz_min" auto-complete="off"></el-input>
+				<el-form-item label="交易金额" prop="amount">
+					<el-input-number v-model="addForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				</el-form-item>
+				<el-form-item label="手续费" prop="fee">
+					<el-input-number v-model="addForm.fee" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				</el-form-item>
+				<el-form-item :label="formatConfirmedLabel(addForm.direction)" prop="confirmed">
+					<el-radio-group v-model="addForm.confirmed">
+						<el-radio class="radio" :label="false">未确认</el-radio>
+						<el-radio class="radio" :label="true">已确认</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="addForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -137,21 +175,23 @@
 	import util from '../common/js/util';
 	//import NProgress from 'nprogress'
 	import {
-		getStockFeeParamsPage,
-		addStockFeeParam,
-		editStockFeeParam,
-		deleteStockFeeParam,
-		deleteStockFeeParams,
+		getFundPurchRedemRecordsPage,
+		addFundPurchRedemRecord,
+		editFundPurchRedemRecord,
+		deleteFundPurchRedemRecord,
+		deleteFundPurchRedemRecords,
 		getAccountsPage,
+		getStrategysPage,
 	} from '../api/api';
 
 	export default {
 		data() {
 			return {
 				filters: {
-					
+					name: '',
+					prod_name: '',
 				},
-				stock_fee_params: [],
+				fund_purch_redem_records: [],
 				total: 0,
 				page: 1,
 				page_size: 15,
@@ -159,7 +199,11 @@
 				order: '',
 				listLoading: false,
 				sels: [], //列表选中列
+				
+				accountsLoading: false,
 				accounts: [],
+				strategiesLoading: false,
+				strategies: [],
 
 				editFormVisible: false, //编辑界面是否显示
 				editLoading: false,
@@ -168,38 +212,37 @@
 						required: true,
 						message: '请选择账户',
 					}],
-					update_date: [{
+					strategy_id: [{
 						required: true,
-						message: '请选择更新日期',
+						message: '请选择策略',
 					}],
-					sh_com: [{
+					trade_date: [{
 						required: true,
-						message: '请设置上交所佣金费率',
+						message: '请选择交易日期',
 					}],
-					sh_other: [{
+					sec_code: [{
 						required: true,
-						message: '请设置上交所其他费用费率',
+						message: '请填写基金代码',
 					}],
-					sh_min: [{
+					direction: [{
 						required: true,
-						message: '请设置上交所最低消费',
+						message: '请选择申赎方向',
 					}],
-					sz_com: [{
+					unit: [{
 						required: true,
-						message: '请设置深交所佣金费率',
+						message: '请填写成交份额',
 					}],
-					sz_other: [{
+					amount: [{
 						required: true,
-						message: '请设置深交所其他费用费率',
+						message: '请填写交易金额',
 					}],
-					sz_min: [{
+					fee: [{
 						required: true,
-						message: '请设置深交所最低消费',
+						message: '请填写交易手续费',
 					}],
 				},
 				//编辑界面数据
 				editForm: {
-					
 				},
 
 				addFormVisible: false, //新增界面是否显示
@@ -209,45 +252,75 @@
 						required: true,
 						message: '请选择账户',
 					}],
-					update_date: [{
+					strategy_id: [{
 						required: true,
-						message: '请选择更新日期',
+						message: '请选择策略',
 					}],
-					sh_com: [{
+					trade_date: [{
 						required: true,
-						message: '请设置上交所佣金费率',
+						message: '请选择交易日期',
 					}],
-					sh_other: [{
+					sec_code: [{
 						required: true,
-						message: '请设置上交所其他费用费率',
+						message: '请填写基金代码',
 					}],
-					sh_min: [{
+					direction: [{
 						required: true,
-						message: '请设置上交所最低消费',
+						message: '请选择申赎方向',
 					}],
-					sz_com: [{
+					unit: [{
 						required: true,
-						message: '请设置深交所佣金费率',
+						message: '请填写成交份额',
 					}],
-					sz_other: [{
+					amount: [{
 						required: true,
-						message: '请设置深交所其他费用费率',
+						message: '请填写交易金额',
 					}],
-					sz_min: [{
+					fee: [{
 						required: true,
-						message: '请设置深交所最低消费',
+						message: '请填写交易手续费',
 					}],
 				},
 				//新增界面数据
 				addForm: {
-					
+					port_no: "",
+					confirmed: false,
+					remarks: "",
 				}
 
 			}
 		},
 		methods: {
-			formatRate: function(row, column) {
-				return row[column.property].toFixed(5);
+			formatDirection: function(row, column) {
+				if (row.direction == 1) return "申购";
+				if (row.direction == -1) return "赎回";
+				if (row.direction != null) return row.direction.toString();
+				return "";
+			},
+			formatAmount: function(row, column) {
+				return row.amount.toFixed(2);
+			},
+			formatConfirmed: function(row, column) {
+				if(row.direction > 0) {
+					if (row.confirmed) {
+						return "份额已确认";
+					} else {
+						return "份额未确认";
+					}
+				} else {
+					if (row.confirmed) {
+						return "金额已确认";
+					} else {
+						return "金额未确认";
+					}
+				}
+			},
+			formatConfirmedLabel: function(direction) {
+				if(direction > 0) {
+					return "份额是否已确认"
+				} else {
+					return "金额是否已确认";
+				}
 			},
 			formatDate: function(ctrlValue) {
 				return (!ctrlValue || ctrlValue == '') ? null : util.formatDate.format(new Date(ctrlValue), 'yyyy-MM-dd');
@@ -258,25 +331,30 @@
 				else
 					return account.product.prod_name + " " + account.acco_com + " " + account.acco + "(已停用)";
 			},
+			formatStrategy: function(strategy) {
+				return strategy.code + " " + strategy.stra_name;
+			},
 			handleCurrentChange: function(val) {
 				this.page = val;
-				this.getStockFeeParams();
+				this.getFundPurchRedemRecords();
 			},
-			getStockFeeParams: function() {
+			getFundPurchRedemRecords: function() {
 				let para = {
 					page: this.page,
 					page_size: this.page_size,
 					sort: this.sort,
 					order: this.order,
 					"account.acco_com_like": this.filters.acco_com,
-					update_date: this.formatDate(this.filters.update_date),
+					"strategy.stra_name_like": this.filters.stra_name,
+					trade_date: this.formatDate(this.filters.trade_date),
+					remarks_like: this.filters.remarks,
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getStockFeeParamsPage(para)
+				getFundPurchRedemRecordsPage(para)
 					.then((res) => {
 						this.total = res.data.total;
-						this.stock_fee_params = res.data.data;
+						this.fund_purch_redem_records = res.data.data;
 						this.listLoading = false;
 						// NProgress.done();
 					})
@@ -307,7 +385,7 @@
 					let para = {
 						id: row.id
 					};
-					deleteStockFeeParam(para)
+					deleteFundPurchRedemRecord(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -315,7 +393,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getFundPurchRedemRecords();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -339,65 +417,129 @@
 			},
 			//显示编辑界面
 			handleEdit: function(index, row) {
-				let para = {
+				this.accountsLoading = true;
+				this.strategiesLoading = true;
+				
+				getAccountsPage({
 					page: 1,
 					page_size: 1000,
-					acco_type_in: "stock,credit",
+					acco_type: "sales",
 					sort: "enabled,acco_com",
 					order: "desc,asc",
-				};
-				getAccountsPage(para)
-					.then((res) => {
-						this.accounts = res.data.data;
+				}).then((res) => {
+					this.accountsLoading = false;
+					this.accounts = res.data.data;
+					if(!this.strategiesLoading) {
 						this.editFormVisible = true;
 						this.editForm = Object.assign({}, row);
-					})
-					.catch(error => {
-						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
-							this.$message({
-								message: rsp.err_code + ": " + rsp.err_code_des,
-								type: 'error'
-							});
-						} else {
-							this.$message({
-								message: error,
-								type: 'error'
-							});
-						}
-					});
+					}
+				}).catch(error => {
+					let rsp = error.response.data;
+					if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						this.$message({
+							message: rsp.err_code + ": " + rsp.err_code_des,
+							type: 'error'
+						});
+					} else {
+						this.$message({
+							message: error,
+							type: 'error'
+						});
+					}
+				});
+				
+				getStrategysPage({
+					page: 1,
+					page_size: 1000,
+					sort: "stra_name",
+					order: "asc",
+				}).then((res) => {
+					this.strategiesLoading = false;
+					this.strategies = res.data.data;
+					if(!this.accountsLoading) {
+						this.editFormVisible = true;
+						this.editForm = Object.assign({}, row);
+					}
+				}).catch(error => {
+					let rsp = error.response.data;
+					if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						this.$message({
+							message: rsp.err_code + ": " + rsp.err_code_des,
+							type: 'error'
+						});
+					} else {
+						this.$message({
+							message: error,
+							type: 'error'
+						});
+					}
+				});
 			},
 			//显示新增界面
 			handleAdd: function() {
-				let para = {
+				this.accountsLoading = true;
+				this.strategiesLoading = true;
+				
+				getAccountsPage({
 					page: 1,
 					page_size: 1000,
-					acco_type_in: "stock,credit",
+					acco_type: "sales",
 					sort: "enabled,acco_com",
 					order: "desc,asc",
-				};
-				getAccountsPage(para)
-					.then((res) => {
-						this.accounts = res.data.data;
+				}).then((res) => {
+					this.accountsLoading = false;
+					this.accounts = res.data.data;
+					if(!this.strategiesLoading) {
 						this.addFormVisible = true;
 						this.addForm = {
-							
+							confirmed: false,
+							remarks: '',
 						};
-					})
-					.catch(error => {
-						let rsp = error.response.data;
-						if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
-							this.$message({
-								message: rsp.err_code + ": " + rsp.err_code_des,
-								type: 'error'
-							});
-						} else {
-							this.$message({
-								message: error,
-								type: 'error'
-							});
-						}
-					});
+					}
+				}).catch(error => {
+					let rsp = error.response.data;
+					if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						this.$message({
+							message: rsp.err_code + ": " + rsp.err_code_des,
+							type: 'error'
+						});
+					} else {
+						this.$message({
+							message: error,
+							type: 'error'
+						});
+					}
+				});
+				
+				getStrategysPage({
+					page: 1,
+					page_size: 1000,
+					sort: "stra_name",
+					order: "asc",
+				}).then((res) => {
+					this.strategiesLoading = false;
+					this.strategies = res.data.data;
+					if(!this.accountsLoading) {
+						this.addFormVisible = true;
+						this.addForm = {
+							confirmed: false,
+							remarks: '',
+						};
+					}
+				}).catch(error => {
+					let rsp = error.response.data;
+					if (typeof(rsp) == "object" && 'err_code' in rsp && 'err_code_des' in rsp) {
+						this.$message({
+							message: rsp.err_code + ": " + rsp.err_code_des,
+							type: 'error'
+						});
+					} else {
+						this.$message({
+							message: error,
+							type: 'error'
+						});
+					}
+				});
 			},
 			//编辑
 			editSubmit: function() {
@@ -407,8 +549,8 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
-							para.update_date = this.formatDate(para.update_date);
-							editStockFeeParam(para)
+							para.trade_date = this.formatDate(para.trade_date);
+							editFundPurchRedemRecord(para)
 								.then((response) => {
 									this.editLoading = false;
 									//NProgress.done();
@@ -427,7 +569,7 @@
 										});
 										this.$refs['editForm'].resetFields();
 										this.editFormVisible = false;
-										this.getStockFeeParams();
+										this.getFundPurchRedemRecords();
 									}
 								})
 								.catch(error => {
@@ -458,8 +600,8 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							para.update_date = this.formatDate(para.update_date);
-							addStockFeeParam(para)
+							para.trade_date = this.formatDate(para.trade_date);
+							addFundPurchRedemRecord(para)
 								.then((response) => {
 									this.addLoading = false;
 									//NProgress.done();
@@ -478,7 +620,7 @@
 										});
 										this.$refs['addForm'].resetFields();
 										this.addFormVisible = false;
-										this.getStockFeeParams();
+										this.getFundPurchRedemRecords();
 									}
 								})
 								.catch(error => {
@@ -507,7 +649,10 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				this.getStockFeeParams();
+				if(this.sort == "account.product.prod_name") {
+					this.sort = "account.product_id";
+				}
+				this.getFundPurchRedemRecords();
 			},
 			//批量删除
 			batchRemove: function() {
@@ -520,7 +665,7 @@
 					let para = {
 						ids: ids
 					};
-					deleteStockFeeParams(para)
+					deleteFundPurchRedemRecords(para)
 						.then((response) => {
 							this.listLoading = false;
 							//NProgress.done();
@@ -528,7 +673,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.getStockFeeParams();
+							this.getFundPurchRedemRecords();
 						})
 						.catch(error => {
 							this.listLoading = false;
@@ -552,7 +697,7 @@
 			}
 		},
 		mounted() {
-			this.getStockFeeParams();
+			this.getFundPurchRedemRecords();
 		}
 	}
 </script>

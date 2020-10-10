@@ -254,9 +254,9 @@
 			},
 			formatAccount: function(account) {
 				if (account.enabled)
-					return account.acco_com + " " + account.acco;
+					return account.product.prod_name + " " + account.acco_com + " " + account.acco;
 				else
-					return account.acco_com + " " + account.acco + "(已停用)";
+					return account.product.prod_name + " " + account.acco_com + " " + account.acco + "(已停用)";
 			},
 			handleCurrentChange: function(val) {
 				this.page = val;
