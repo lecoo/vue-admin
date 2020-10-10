@@ -27,11 +27,11 @@
 			</el-table-column>
 			<el-table-column prop="sec_code" label="基金代码" width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="trade_date" label="交易日" min-width="120" sortable="custom">
+			<el-table-column prop="trade_date" label="交易日" width="120" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="esti_nav" label="预估净值" width="140" sortable="custom">
+			<el-table-column prop="esti_nav" label="预估净值" width="140">
 			</el-table-column>
-			<el-table-column label="操作" width="150">
+			<el-table-column label="操作" min-width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -176,7 +176,7 @@
 					sort: this.sort,
 					order: this.order,
 					sec_code_like: this.filters.sec_code,
-					trade_date: this.filters.trade_date,
+					trade_date: this.formatDate(this.filters.trade_date),
 				};
 				this.listLoading = true;
 				//NProgress.start();
