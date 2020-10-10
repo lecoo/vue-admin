@@ -413,7 +413,7 @@ export const deleteCbondFeeParams = params => {
 	});
 };
 
-// 可转债手续费参数接口
+// 国债逆回购手续费参数接口
 export const getRrtFeeParamsPage = params => {
 	return axios.get(`${base}/RrtFeeParams`, {
 		params: params,
@@ -450,6 +450,182 @@ export const deleteRrtFeeParam = params => {
 
 export const deleteRrtFeeParams = params => {
 	return axios.delete(`${base}/RrtFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 公募基金申赎接口
+export const getFundPurchRedemRecordsPage = params => {
+	return axios.get(`${base}/FundPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addFundPurchRedemRecord = params => {
+	return axios.post(`${base}/FundPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editFundPurchRedemRecord = params => {
+	return axios.put(`${base}/FundPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFundPurchRedemRecord = params => {
+	return axios.delete(`${base}/FundPurchRedemRecord`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFundPurchRedemRecords = params => {
+	return axios.delete(`${base}/FundPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 公募基金预估净值接口
+export const getFundNavEstisPage = params => {
+	return axios.get(`${base}/FundNavEstis`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addFundNavEsti = params => {
+	return axios.post(`${base}/FundNavEsti`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editFundNavEsti = params => {
+	return axios.put(`${base}/FundNavEsti`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFundNavEsti = params => {
+	return axios.delete(`${base}/FundNavEsti`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteFundNavEstis = params => {
+	return axios.delete(`${base}/FundNavEstis`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 场外货币基金申赎接口
+export const getMoneyfundPurchRedemRecordsPage = params => {
+	return axios.get(`${base}/MoneyfundPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addMoneyfundPurchRedemRecord = params => {
+	return axios.post(`${base}/MoneyfundPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editMoneyfundPurchRedemRecord = params => {
+	return axios.put(`${base}/MoneyfundPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteMoneyfundPurchRedemRecord = params => {
+	return axios.delete(`${base}/MoneyfundPurchRedemRecord`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteMoneyfundPurchRedemRecords = params => {
+	return axios.delete(`${base}/MoneyfundPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+// 嵌套产品申赎接口
+export const getEmbeddingPurchRedemRecordsPage = params => {
+	return axios.get(`${base}/EmbeddingPurchRedemRecords`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addEmbeddingPurchRedemRecord = params => {
+	return axios.post(`${base}/EmbeddingPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editEmbeddingPurchRedemRecord = params => {
+	return axios.put(`${base}/EmbeddingPurchRedemRecord`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteEmbeddingPurchRedemRecord = params => {
+	return axios.delete(`${base}/EmbeddingPurchRedemRecord`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteEmbeddingPurchRedemRecords = params => {
+	return axios.delete(`${base}/EmbeddingPurchRedemRecords`, {
 		params: params,
 		headers: {
 			"token": sessionStorage.getItem('token')

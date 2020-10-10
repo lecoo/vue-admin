@@ -12,6 +12,10 @@ import EtfFeeParams from './views/EtfFeeParams.vue'
 import FuturesFeeParams from './views/FuturesFeeParams.vue'
 import CbondFeeParams from './views/CbondFeeParams.vue'
 import RrtFeeParams from './views/RrtFeeParams.vue'
+import FundPurchRedemRecords from './views/FundPurchRedemRecords.vue'
+import FundNavEstis from './views/FundNavEstis.vue'
+import MoneyfundPurchRedemRecords from './views/MoneyfundPurchRedemRecords.vue'
+import EmbeddingPurchRedemRecords from './views/EmbeddingPurchRedemRecords.vue'
 
 import Form from './views/test/Form.vue'
 import Page4 from './views/test/Page4.vue'
@@ -99,6 +103,47 @@ let routes = [
 			{ path: '/rrt_fee_params', component: RrtFeeParams, name: '国债逆回购手续费' },
 	    ]
 	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/fund_purch_redem_records', component: FundPurchRedemRecords, name: '公募基金申赎记录' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/fund_nav_estis', component: FundNavEstis, name: '公募基金净值预估' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/moneyfund_purch_redem_records', component: MoneyfundPurchRedemRecords, name: '货币基金申赎记录' }
+	    ]
+	},
+	{
+	    path: '/',
+	    component: Home,
+	    name: '',
+	    iconCls: 'fa fa-bookmark',
+	    leaf: true,//只有一个节点
+	    children: [
+	        { path: '/embedding_purch_redem_records', component: EmbeddingPurchRedemRecords, name: '嵌套产品申赎记录' }
+	    ]
+	},
+	
     {
         path: '/',
 		hidden: true,
