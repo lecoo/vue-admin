@@ -720,3 +720,47 @@ export const deleteOtherValues = params => {
 		}
 	});
 };
+
+// 其他托管户权益变动接口
+export const getTrusteeAccountChangesPage = params => {
+	return axios.get(`${base}/TrusteeAccountChanges`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addTrusteeAccountChange = params => {
+	return axios.post(`${base}/TrusteeAccountChange`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editTrusteeAccountChange = params => {
+	return axios.put(`${base}/TrusteeAccountChange`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteTrusteeAccountChange = params => {
+	return axios.delete(`${base}/TrusteeAccountChange`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteTrusteeAccountChanges = params => {
+	return axios.delete(`${base}/TrusteeAccountChanges`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};

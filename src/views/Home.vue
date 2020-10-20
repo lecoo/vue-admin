@@ -4,11 +4,11 @@
 			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
 				{{collapsed?'':sysName}}
 			</el-col>
-			<el-col :span="10">
+			<!-- <el-col :span="10">
 				<div class="tools" @click.prevent="collapse">
 					<i class="fa fa-align-justify"></i>
 				</div>
-			</el-col>
+			</el-col> -->
 			<el-col :span="4" class="userinfo">
 				<el-button @click.native="logout">退出登录</el-button>
 			</el-col>
