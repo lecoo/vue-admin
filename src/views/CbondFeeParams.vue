@@ -172,30 +172,6 @@
 						required: true,
 						message: '请选择更新日期',
 					}],
-					sh_com: [{
-						required: true,
-						message: '请设置上交所佣金费率',
-					}],
-					sh_other: [{
-						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
-					}],
 				},
 				//编辑界面数据
 				editForm: {
@@ -213,30 +189,6 @@
 						required: true,
 						message: '请选择更新日期',
 					}],
-					sh_com: [{
-						required: true,
-						message: '请设置上交所佣金费率',
-					}],
-					sh_other: [{
-						required: true,
-						message: '请设置上交所其他费用费率',
-					}],
-					sh_min: [{
-						required: true,
-						message: '请设置上交所最低消费',
-					}],
-					sz_com: [{
-						required: true,
-						message: '请设置深交所佣金费率',
-					}],
-					sz_other: [{
-						required: true,
-						message: '请设置深交所其他费用费率',
-					}],
-					sz_min: [{
-						required: true,
-						message: '请设置深交所最低消费',
-					}],
 				},
 				//新增界面数据
 				addForm: {
@@ -247,6 +199,9 @@
 		},
 		methods: {
 			formatRate: function(row, column) {
+				if(row[column.property] == null) {
+					return '';
+				}
 				return row[column.property].toFixed(5);
 			},
 			formatDate: function(ctrlValue) {
