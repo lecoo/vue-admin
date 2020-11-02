@@ -78,6 +78,12 @@
 				<el-form-item label="清盘日期">
 					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.windup_date"></el-date-picker>
 				</el-form-item>
+				<el-form-item label="起始净值日期">
+					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.init_date"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="起始净值">
+					<el-input v-model="editForm.init_nav" auto-complete="off"></el-input>
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
@@ -109,6 +115,12 @@
 				</el-form-item>
 				<el-form-item label="清盘日期">
 					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.windup_date"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="起始净值日期">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.init_date"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="起始净值">
+					<el-input v-model="addForm.init_nav" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -189,9 +201,7 @@
 				},
 				//新增界面数据
 				addForm: {
-					code: '',
-					prod_name: '',
-					prod_short_name: '',
+					
 				}
 
 			}
@@ -298,6 +308,8 @@
 					code: '',
 					prod_name: '',
 					prod_short_name: '',
+					init_date: new Date().format("yyyy-MM-dd"),
+					init_nav: 1.0,
 				};
 			},
 			//编辑
@@ -311,6 +323,7 @@
 							para.setup_date = this.formatDate(para.setup_date);
 							para.windup_date = this.formatDate(para.windup_date);
 							para.enabled = (!para.windup_date || para.windup_date == '');
+							para.init_date = this.formatDate(para.init_date);
 							editProduct(para)
 								.then((response) => {
 									this.editLoading = false;
@@ -364,6 +377,7 @@
 							para.setup_date = this.formatDate(para.setup_date);
 							para.windup_date = this.formatDate(para.windup_date);
 							para.enabled = (!para.windup_date || para.windup_date == '');
+							para.init_date = this.formatDate(para.init_date);
 							addProduct(para)
 								.then((response) => {
 									this.addLoading = false;

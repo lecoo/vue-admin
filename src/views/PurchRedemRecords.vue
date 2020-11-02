@@ -76,12 +76,21 @@
 				<el-form-item label="金额" prop="amount">
 					<el-input-number v-model="editForm.amount" :precision="2" :controls="false"></el-input-number>
 				</el-form-item>
-				<el-form-item label="金额是否已确认" prop="confirmed">
-					<el-radio-group v-model="editForm.confirmed">
-						<el-radio class="radio" :label="false">未确认</el-radio>
-						<el-radio class="radio" :label="true">已确认</el-radio>
-					</el-radio-group>
-				</el-form-item>
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="金额是否已确认" prop="confirmed">
+							<el-radio-group v-model="editForm.confirmed">
+								<el-radio class="radio" :label="false">未确认</el-radio>
+								<el-radio class="radio" :label="true">已确认</el-radio>
+							</el-radio-group>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="确认时间" v-if="editForm.confirmed" prop="confirm_date">
+							<el-date-picker type="date" placeholder="选择日期" v-model="editForm.confirm_date"></el-date-picker>
+						</el-form-item>
+					</el-col>
+				</el-row>
 				<el-form-item label="备注">
 					<el-input v-model="editForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
@@ -112,12 +121,21 @@
 				<el-form-item label="金额" prop="amount">
 					<el-input-number v-model="addForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
 				</el-form-item>
-				<el-form-item label="金额是否已确认" prop="confirmed">
-					<el-radio-group v-model="addForm.confirmed">
-						<el-radio class="radio" :label="false">未确认</el-radio>
-						<el-radio class="radio" :label="true">已确认</el-radio>
-					</el-radio-group>
-				</el-form-item>
+				<el-row>
+					<el-col :span="12">
+						<el-form-item label="金额是否已确认" prop="confirmed">
+							<el-radio-group v-model="addForm.confirmed">
+								<el-radio class="radio" :label="false">未确认</el-radio>
+								<el-radio class="radio" :label="true">已确认</el-radio>
+							</el-radio-group>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="确认时间" v-if="addForm.confirmed" prop="confirm_date">
+							<el-date-picker type="date" placeholder="选择日期" v-model="addForm.confirm_date"></el-date-picker>
+						</el-form-item>
+					</el-col>
+				</el-row>
 				<el-form-item label="备注">
 					<el-input v-model="addForm.remarks" auto-complete="off"></el-input>
 				</el-form-item>
@@ -385,6 +403,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
 							para.trade_date = this.formatDate(para.trade_date);
+							para.confirm_date = para.confirmed ? this.formatDate(para.confirm_date) : null;
 							editPurchRedemRecord(para)
 								.then((response) => {
 									this.editLoading = false;
@@ -436,6 +455,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
 							para.trade_date = this.formatDate(para.trade_date);
+							para.confirm_date = para.confirmed ? this.formatDate(para.confirm_date) : null;
 							addPurchRedemRecord(para)
 								.then((response) => {
 									this.addLoading = false;

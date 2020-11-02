@@ -343,7 +343,7 @@
 						this.products = res.data.data;
 						this.addFormVisible = true;
 						this.addForm = {
-							
+							trade_date: new Date().format("yyyy-MM-dd"),
 						};
 					})
 					.catch(error => {
