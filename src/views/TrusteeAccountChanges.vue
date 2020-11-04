@@ -25,7 +25,7 @@
 
 		<!-- 列表 -->
 		<el-table :data="trustee_account_changes" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
-		 @sort-change="onSortChanged" style="width: 100%;">
+		 @sort-change="onSortChanged" :cell-style="cellStyle" :header-cell-style="headerCellStyle" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
@@ -44,24 +44,24 @@
 			</el-table-column>
 			<el-table-column prop="remarks" label="备注" min-width="140" sortable="custom">
 			</el-table-column>
-			<el-table-column label="操作" width="150">
+			<el-table-column label="操作" width="180">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button size="mini" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+			<el-button size="small" type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="page_size" :total="total"
 			 style="float:right;">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="120px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="托管户" prop="account_id">
 					<el-select v-model="editForm.account_id" clearable filterable placeholder="请选择托管户">
@@ -72,13 +72,13 @@
 					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.trade_date" value-format="yyyy-MM-dd"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="在途资产增量" prop="in_transit_chg">
-					<el-input-number v-model="editForm.in_transit_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="editForm.in_transit_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="应计负债增量" prop="liability_chg">
-					<el-input-number v-model="editForm.liability_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="editForm.liability_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="可用资金增量" prop="available_chg">
-					<el-input-number v-model="editForm.available_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="editForm.available_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="备注">
 					<el-input v-model="editForm.remarks" auto-complete="off"></el-input>
@@ -91,7 +91,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="120px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="托管户" prop="account_id">
 					<el-select v-model="addForm.account_id" clearable filterable placeholder="请选择托管户">
@@ -102,13 +102,13 @@
 					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.trade_date" value-format="yyyy-MM-dd"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="在途资产增量" prop="in_transit_chg">
-					<el-input-number v-model="addForm.in_transit_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="addForm.in_transit_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="应计负债增量" prop="liability_chg">
-					<el-input-number v-model="addForm.liability_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="addForm.liability_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="可用资金增量" prop="available_chg">
-					<el-input-number v-model="addForm.available_chg" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+					<el-input-number v-model="addForm.available_chg" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-form-item label="备注">
 					<el-input v-model="addForm.remarks" auto-complete="off"></el-input>
@@ -135,6 +135,8 @@
 	} from '../api/api';
 
 	export default {
+		mixins: [util],
+		
 		data() {
 			return {
 				filters: {

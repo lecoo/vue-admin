@@ -58,6 +58,16 @@ String.prototype.format = function(args) {
 }
 
 export default {
+	methods: {
+		// 单元格的 style 的回调方法
+		cellStyle: function({row, column, rowIndex, columnIndex}) {
+			return 'padding: 6px 0;'
+		},
+		//设置表头行的样式
+		headerCellStyle: function({row, column, rowIndex, columnIndex}){
+			return 'padding: 6px 0; background-color: #eef1f6; color: #1f2d3d;'
+		},
+	},
 	
     getQueryStringByName: function (name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");

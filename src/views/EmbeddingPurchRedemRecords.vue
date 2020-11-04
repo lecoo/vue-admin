@@ -26,7 +26,7 @@
 
 		<!-- 列表 -->
 		<el-table :data="embedding_purch_redem_records" highlight-current-row v-loading="listLoading" @selection-change="onSelectionChanged"
-		 @sort-change="onSortChanged" style="width: 100%;">
+		 @sort-change="onSortChanged" :cell-style="cellStyle" :header-cell-style="headerCellStyle" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
@@ -49,24 +49,24 @@
 			</el-table-column>
 			<el-table-column prop="remarks" label="备注" min-width="120">
 			</el-table-column>
-			<el-table-column label="操作" width="150">
+			<el-table-column label="操作" width="180">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button size="mini" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button size="mini" icon="el-icon-delete" type="danger" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+			<el-button size="small" type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="page_size" :total="total"
 			 style="float:right;">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="账户" prop="account_id">
 					<el-select v-model="editForm.account_id" clearable filterable placeholder="请选择账户">
@@ -85,8 +85,11 @@
 						<el-radio class="radio" :label="-1">赎回</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="交易金额" prop="amount">
-					<el-input-number v-model="editForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				<el-form-item :label="editForm.direction>0?'申购金额(费前)':'赎回金额(费后)'" prop="amount">
+					<el-input-number v-model="editForm.amount" :precision="2" :step="0.01"></el-input-number>
+				</el-form-item>
+				<el-form-item label="手续费" prop="fee">
+					<el-input-number v-model="editForm.fee" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-row>
 					<el-col :span="12">
@@ -114,7 +117,7 @@
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新建" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新建" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-form-item label="账户" prop="account_id">
 					<el-select v-model="addForm.account_id" clearable filterable placeholder="请选择账户">
@@ -133,8 +136,11 @@
 						<el-radio class="radio" :label="-1">赎回</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<el-form-item label="交易金额" prop="amount">
-					<el-input-number v-model="addForm.amount" :precision="2" :step="0.01" :controls-position="right"></el-input-number>
+				<el-form-item :label="addForm.direction!=null?(addForm.direction>0?'申购金额(费前)':'赎回金额(费后)'):'交易金额'" prop="amount">
+					<el-input-number v-model="addForm.amount" :precision="2" :step="0.01"></el-input-number>
+				</el-form-item>
+				<el-form-item label="手续费" prop="fee">
+					<el-input-number v-model="addForm.fee" :precision="2" :step="0.01"></el-input-number>
 				</el-form-item>
 				<el-row>
 					<el-col :span="12">
@@ -176,6 +182,8 @@
 	} from '../api/api';
 
 	export default {
+		mixins: [util],
+
 		data() {
 			return {
 				filters: {
@@ -190,7 +198,7 @@
 				order: '',
 				listLoading: false,
 				sels: [], //列表选中列
-				
+
 				accounts: [],
 
 				editFormVisible: false, //编辑界面是否显示
@@ -218,8 +226,7 @@
 					}],
 				},
 				//编辑界面数据
-				editForm: {
-				},
+				editForm: {},
 
 				addFormVisible: false, //新增界面是否显示
 				addLoading: false,
@@ -264,7 +271,7 @@
 				return row.amount.toFixed(2);
 			},
 			formatConfirmed: function(row, column) {
-				if(row.direction > 0) {
+				if (row.direction > 0) {
 					if (row.confirmed) {
 						return "金额已确认";
 					} else {
@@ -279,7 +286,7 @@
 				}
 			},
 			formatConfirmedLabel: function(direction) {
-				if(direction > 0) {
+				if (direction > 0) {
 					return "金额是否已确认"
 				} else {
 					return "金额是否已确认";
@@ -416,7 +423,7 @@
 					order: "desc,asc",
 				}).then((res) => {
 					this.accounts = res.data.data;
-					
+
 					this.addFormVisible = true;
 					this.addForm = {
 						trade_date: new Date().format("yyyy-MM-dd"),
@@ -549,7 +556,7 @@
 			onSortChanged: function(val) {
 				this.sort = val.prop;
 				this.order = val.order;
-				if(this.sort == "account.product.prod_name") {
+				if (this.sort == "account.product.prod_name") {
 					this.sort = "account.product_id";
 				}
 				this.getEmbeddingPurchRedemRecords();
