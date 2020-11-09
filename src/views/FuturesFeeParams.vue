@@ -4,6 +4,9 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
+					<el-input v-model="filters.account_id" placeholder="账户ID"></el-input>
+				</el-form-item>
+				<el-form-item>
 					<el-input v-model="filters.acco_com" placeholder="开户公司"></el-input>
 				</el-form-item>
 				<el-form-item>
@@ -24,6 +27,8 @@
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
+			</el-table-column>
+			<el-table-column prop="account_id" label="账户ID" width="80">
 			</el-table-column>
 			<el-table-column prop="account.acco_com" label="开户公司" width="120" sortable="custom">
 			</el-table-column>
@@ -206,6 +211,7 @@
 					page_size: this.page_size,
 					sort: this.sort,
 					order: this.order,
+					account_id: this.filters.account_id,
 					"account.acco_com_like": this.filters.acco_com,
 					update_date: this.formatDate(this.filters.update_date),
 				};
