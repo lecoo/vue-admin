@@ -460,7 +460,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteOtherValues(para)
 						.then((response) => {

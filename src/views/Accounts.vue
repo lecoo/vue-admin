@@ -112,14 +112,14 @@
 						<el-radio class="radio" :label="false">停用</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<template v-if="editForm.acco_type == 'futures'">
+				<template v-if="editForm.acco_type == 'futures' || editForm.acco_type == 'option'">
 					<el-row>
 						<el-col :span="12">
 							<el-form-item label="密码">
 								<el-input v-model="editForm.password" auto-complete="off"></el-input>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="12" v-if="editForm.acco_type == 'futures'">
 							<el-form-item label="BrokerID">
 								<el-input v-model="editForm.broker_id" auto-complete="off"></el-input>
 							</el-form-item>
@@ -149,12 +149,17 @@
 							</el-form-item>
 						</el-col>
 					</el-row>
-					<el-form-item label="柜台API">
+					<el-form-item label="柜台API" v-if="editForm.acco_type == 'futures'">
 						<el-select v-model="editForm.api_version" clearable placeholder="请选择柜台API">
 							<el-option key="6_3_15" value="6_3_15" label="CTP 6.3.15"></el-option>
 							<el-option key="ronghang" value="ronghang" label="融航"></el-option>
 							<el-option key="jees" value="jees" label="杰易斯"></el-option>
 							<el-option key="epi" value="epi" label="EPI"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="柜台API" v-if="editForm.acco_type == 'option'">
+						<el-select v-model="editForm.api_version" clearable placeholder="请选择柜台API">
+							<el-option key="dfitc_api_1_6" value="dfitc_api_1_6" label="DFITC 1.6"></el-option>
 						</el-select>
 					</el-form-item>
 				</template>
@@ -200,14 +205,14 @@
 						<el-radio class="radio" :label="false">停用</el-radio>
 					</el-radio-group>
 				</el-form-item>
-				<template v-if="addForm.acco_type == 'futures'">
+				<template v-if="addForm.acco_type == 'futures' || addForm.acco_type == 'option'">
 					<el-row>
 						<el-col :span="12">
 							<el-form-item label="密码">
 								<el-input v-model="addForm.password" auto-complete="off"></el-input>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="12" v-if="addForm.acco_type == 'futures'">
 							<el-form-item label="BrokerID">
 								<el-input v-model="addForm.broker_id" auto-complete="off"></el-input>
 							</el-form-item>
@@ -237,12 +242,17 @@
 							</el-form-item>
 						</el-col>
 					</el-row>
-					<el-form-item label="柜台API">
+					<el-form-item label="柜台API" v-if="addForm.acco_type == 'futures'">
 						<el-select v-model="addForm.api_version" clearable placeholder="请选择柜台API">
 							<el-option key="6_3_15" value="6_3_15" label="CTP 6.3.15"></el-option>
 							<el-option key="ronghang" value="ronghang" label="融航"></el-option>
 							<el-option key="jees" value="jees" label="杰易斯"></el-option>
 							<el-option key="epi" value="epi" label="EPI"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="柜台API" v-if="addForm.acco_type == 'option'">
+						<el-select v-model="addForm.api_version" clearable placeholder="请选择柜台API">
+							<el-option key="dfitc_api_1_6" value="dfitc_api_1_6" label="DFITC 1.6"></el-option>
 						</el-select>
 					</el-form-item>
 				</template>
@@ -605,7 +615,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteAccounts(para)
 						.then((response) => {

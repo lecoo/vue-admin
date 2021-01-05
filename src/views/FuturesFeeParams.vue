@@ -28,7 +28,7 @@
 			</el-table-column>
 			<el-table-column prop="id" label="#" width="80" sortable="custom">
 			</el-table-column>
-			<el-table-column prop="account_id" label="账户ID" width="80">
+			<el-table-column prop="account_id" label="账户ID" width="90" sortable="custom">
 			</el-table-column>
 			<el-table-column prop="account.acco_com" label="开户公司" width="120" sortable="custom">
 			</el-table-column>
@@ -462,7 +462,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteFuturesFeeParams(para)
 						.then((response) => {

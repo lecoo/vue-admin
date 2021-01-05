@@ -375,7 +375,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteStrategys(para)
 						.then((response) => {

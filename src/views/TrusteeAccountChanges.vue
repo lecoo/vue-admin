@@ -429,7 +429,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteTrusteeAccountChanges(para)
 						.then((response) => {

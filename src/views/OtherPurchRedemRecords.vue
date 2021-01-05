@@ -576,7 +576,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteOtherPurchRedemRecords(para)
 						.then((response) => {

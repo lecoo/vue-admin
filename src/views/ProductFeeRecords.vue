@@ -482,7 +482,7 @@
 					this.listLoading = true;
 					//NProgress.start();
 					let para = {
-						ids: ids
+						id_in: ids
 					};
 					deleteProductFeeRecords(para)
 						.then((response) => {
