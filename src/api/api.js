@@ -457,6 +457,51 @@ export const deleteRrtFeeParams = params => {
 	});
 };
 
+
+// 国债逆回购手续费参数接口
+export const getOptionFeeParamsPage = params => {
+	return axios.get(`${base}/OptionFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const addOptionFeeParam = params => {
+	return axios.post(`${base}/OptionFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		},
+	});
+};
+
+export const editOptionFeeParam = params => {
+	return axios.put(`${base}/OptionFeeParam`, params, {
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOptionFeeParam = params => {
+	return axios.delete(`${base}/OptionFeeParam`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
+export const deleteOptionFeeParams = params => {
+	return axios.delete(`${base}/OptionFeeParams`, {
+		params: params,
+		headers: {
+			"token": sessionStorage.getItem('token')
+		}
+	});
+};
+
 // 公募基金申赎接口
 export const getFundPurchRedemRecordsPage = params => {
 	return axios.get(`${base}/FundPurchRedemRecords`, {

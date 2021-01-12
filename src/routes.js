@@ -12,6 +12,7 @@ import EtfFeeParams from './views/EtfFeeParams.vue'
 import FuturesFeeParams from './views/FuturesFeeParams.vue'
 import CbondFeeParams from './views/CbondFeeParams.vue'
 import RrtFeeParams from './views/RrtFeeParams.vue'
+import OptionFeeParams from './views/OptionFeeParams.vue'
 import FundPurchRedemRecords from './views/FundPurchRedemRecords.vue'
 import FundNavEstis from './views/FundNavEstis.vue'
 import MoneyfundPurchRedemRecords from './views/MoneyfundPurchRedemRecords.vue'
@@ -65,6 +66,7 @@ let routes = [
 			{ path: '/futures_fee_params', component: FuturesFeeParams, name: '期货手续费' },
 			{ path: '/cbond_fee_params', component: CbondFeeParams, name: '可转债手续费' },
 			{ path: '/rrt_fee_params', component: RrtFeeParams, name: '国债逆回购手续费' },
+			{ path: '/option_fee_params', component: OptionFeeParams, name: '期权手续费' },
 	    ]
 	},
 	{
